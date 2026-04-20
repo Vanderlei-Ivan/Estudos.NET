@@ -23,4 +23,32 @@ public class ProductController : ControllerBase
         return Ok(product);
 
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProducts()
+    {
+        var products = await _service.GetProducts();
+        return Ok(products);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProductById(string id)
+    {
+        try
+        {
+            var products = await _service.GetProductById(id);
+            return Ok(products);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("search_for_filtered_products/{filter}")]
+    public async Task<IActionResult> SearchForFilteredProducts(int filter)
+    {
+        var products = await _service.SearchForFilteredProducts(filter);
+        
+    }
 }
