@@ -48,7 +48,22 @@ public class ProductController : ControllerBase
     [HttpGet("search_for_filtered_products/{filter}")]
     public async Task<IActionResult> SearchForFilteredProducts(int filter)
     {
-        var products = await _service.SearchForFilteredProducts(filter);
+        try
+        {
+            var products = await _service.SearchForFilteredProducts(filter);
+            return Ok(products);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
         
+    }
+
+    [HttpGet("filter_products")]
+    public async Task<IActionResult> FilterProducts([FromQuery] FilterProductsDto dto)
+    {
+        var products = await _service.FilterProducts(dto);
+        return Ok(products);
     }
 }

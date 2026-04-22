@@ -3,6 +3,7 @@ using ApiMongoTreino.Models;
 using ApiMongoTreino.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace ApiMongoTreino.Service;
 
@@ -60,13 +61,72 @@ public class ProductService : IProductService
         };
     }
 
+// 1 - buscar produtos onde os preços sao maiores ou iguais a 100
+// 2 - buscar produtos onde Existe estoque disponivel
     public async Task<List<GetProductsDto>> SearchForFilteredProducts(int filter)
     {
-        var products = SearchProductsByFilter(filter);
+        List<Product> products = new();
+        switch (filter)
+        {
+            case 1:
+            products = await SearchForProductsByValue();
+            break;
+
+            case 2:
+            products = await SearchForProductsExistsStock();
+            break;
+
+            default:
+            throw new ArgumentException("Filtro inválido.");
+        }
+        return products.Select(p => new GetProductsDto
+        {
+            Name = p.Name,
+            Price = p.Price,
+            Description = p.Description,
+            Stock = p.Stock
+            
+        }).ToList();
     }
 
-    public async Task<List<GetProductsDto>> SearchProductsByFilter(int filter)
+    public async Task<List<Product>> SearchForProductsByValue()
     {
+        return await _products.AsQueryable().Where(p => p.Price >= 100).ToListAsync();
+    }
+
+    public async Task<List<Product>> SearchForProductsExistsStock()
+    {
+        return await _products.AsQueryable().Where(p => p.Stock > 0).ToListAsync();
+    }
+
+    public async Task<List<GetProductsDto>> FilterProducts(FilterProductsDto filters)
+    {
+        var query = _products.AsQueryable();
+
+        if (string.IsNullOrWhiteSpace(filters.Name))
+        {
+            query = query.Where(p => p.Name == filters.Name);
+        }
+
+        if (filters.Price.HasValue)
+        {
+            query = query.Where(p => p.Price <= filters.Price);
+        }
+
+        if (filters.Stock.HasValue)
+        {
+            query = query.Where(p => p.Stock >= filters.Stock);
+        }
         
+        var products = await query.ToListAsync();
+        return products.Select(p => new GetProductsDto
+        {
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price,
+            Stock = p.Stock
+            
+        }).ToList();
+
     }
 }

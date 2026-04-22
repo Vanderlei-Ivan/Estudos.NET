@@ -8,4 +8,5 @@ public interface IProductService
     Task<List<GetProductsDto>> GetProducts();
     Task<GetProductsDto> GetProductById(string id);
     Task<List<GetProductsDto>> SearchForFilteredProducts(int filter);
+    Task<List<GetProductsDto>> FilterProducts(FilterProductsDto dto);
 }
