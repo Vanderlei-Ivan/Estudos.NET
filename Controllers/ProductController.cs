@@ -10,10 +10,11 @@ namespace ApiMongoTreino.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _service;
-
-    public ProductController(IProductService service)
+    private readonly IApplicationNotificationHandler _notifications; 
+    public ProductController(IProductService service,IApplicationNotificationHandler notifications)
     {
         _service = service;
+        _notifications = notifications;
     }
 
     [HttpPost]
@@ -34,15 +35,14 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(string id)
     {
-        try
+        var products = await _service.GetProductById(id);
+        
+        if (_notifications.HasErrors())
         {
-            var products = await _service.GetProductById(id);
-            return Ok(products);
+            return BadRequest(_notifications.GetErrors());
         }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+
+        return Ok(products);
     }
 
     [HttpGet("search_for_filtered_products/{filter}")]
@@ -57,7 +57,7 @@ public class ProductController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        
+
     }
 
     [HttpGet("filter_products")]

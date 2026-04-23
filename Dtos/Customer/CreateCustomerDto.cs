@@ -14,5 +14,5 @@ public class CreateCustomerDto
     [Required(ErrorMessage = "Campo Telefone é Obrigatorio")]
     public string Phone { get; set; }
     [Required(ErrorMessage = "Por favor , nos informe seu Endereço")]
-    public Address? Adress { get; set; }
+    public AddressDto? Address { get; set; }
 }

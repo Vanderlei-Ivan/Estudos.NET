@@ -8,25 +8,28 @@ using ApiMongoTreino.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Controllers
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationFilter>();
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Mongo settings
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
+// Mongo client
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
 
+// Collections
 builder.Services.AddScoped(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
@@ -37,14 +40,32 @@ builder.Services.AddScoped(sp =>
     return database.GetCollection<Product>("products");
 });
 
+builder.Services.AddScoped(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    var client = sp.GetRequiredService<IMongoClient>();
+
+    var database = client.GetDatabase(settings.DatabaseName);
+
+    return database.GetCollection<Customer>("customers");
+});
+
+// Services
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+// ✔ Notification Pattern (ESSENCIAL)
+builder.Services.AddScoped<IApplicationNotificationHandler, ApplicationNotificationHandler>();
+
+// API behavior
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

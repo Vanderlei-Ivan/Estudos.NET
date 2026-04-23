@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using ApiMongoTreino.Dtos.Products;
 using ApiMongoTreino.Models;
 using ApiMongoTreino.Service.Interface;
@@ -7,10 +8,11 @@ using MongoDB.Driver.Linq;
 
 namespace ApiMongoTreino.Service;
 
-public class ProductService : IProductService
+public class ProductService : ApplicationService, IProductService
 {
     private readonly IMongoCollection<Product> _products;
-    public ProductService(IMongoCollection<Product> products)
+    public ProductService(IMongoCollection<Product> products,IApplicationNotificationHandler notifications)
+        : base(notifications)
     {
         _products = products;
     }
@@ -45,20 +47,6 @@ public class ProductService : IProductService
            Stock = p.Stock
 
        }).DistinctBy(p => new{p.Name,p.Price,p.Stock}).ToList();
-    }
-
-    public async Task<GetProductsDto> GetProductById(string id)
-    {
-        var product = await _products.Find(p => p.Id == id).FirstOrDefaultAsync();
-        if (product == null)
-        {
-            throw new Exception("Produto não encontrado");
-        }
-        return new GetProductsDto
-        {
-            Name = product.Name,
-            Price = product.Price
-        };
     }
 
 // 1 - buscar produtos onde os preços sao maiores ou iguais a 100
@@ -128,5 +116,32 @@ public class ProductService : IProductService
             
         }).ToList();
 
+    }
+
+    public async Task<GetProductsDto?> GetProductById(string id)
+    {
+        var product = await GetProduct(id);
+        if(product is null)
+        {
+            return null;
+        }
+        return new GetProductsDto
+        {
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock
+        };
+    }
+
+    public async Task<Product?> GetProduct(string id)
+    {
+        var product = await _products.Find(p => p.Id == id).FirstOrDefaultAsync();
+        if(product is null)
+        {
+            _notifications.HandleError(new ApplicationNotification("Produto não encontrado"));
+            return null;
+        }
+        return product;
     }
 }

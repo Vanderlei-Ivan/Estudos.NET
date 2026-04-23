@@ -12,5 +12,5 @@ public class Customer
     public string? LastName { get; set;}
     public string? Email { get; set;}
     public string? Phone { get; set;}
-    public Address? Adress { get; set;}
+    public Address? Address { get; set;}
 }
