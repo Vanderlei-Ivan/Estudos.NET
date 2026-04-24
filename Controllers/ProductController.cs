@@ -21,6 +21,11 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDto dto)
     {
         var product = await _service.CreateProduct(dto);
+
+        if (_notifications.HasErrors())
+        {
+            return BadRequest(_notifications.GetErrors());
+        }
         return Ok(product);
 
     }

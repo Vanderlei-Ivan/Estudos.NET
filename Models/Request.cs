@@ -10,8 +10,8 @@ public class Request
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
     public Customer Customer { get; set; }
-    public List<Product> Products { get; set;}
-    public int TotalPrice { get; set;}
+    public List<ItensRequest> Itens { get; set;}
+    public decimal TotalPrice { get; set;}
     public DateTime PaymentDate{ get; set;}
     public DateTime RequestDate{ get; set;}
     [BsonRepresentation(BsonType.String)]

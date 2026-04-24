@@ -4,5 +4,5 @@ namespace ApiMongoTreino.Service.Interface;
 
 public interface IRequestService
 {
-    Task<ResponseRequestDto?> CreateRequest(CreateRequestDto dto);
+    Task<ResponseBaseDto?> CreateRequest(CreateRequestDto dto);
 }

@@ -50,9 +50,21 @@ builder.Services.AddScoped(sp =>
     return database.GetCollection<Customer>("customers");
 });
 
+builder.Services.AddScoped(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    var client = sp.GetRequiredService<IMongoClient>();
+
+    var database = client.GetDatabase(settings.DatabaseName);
+
+    return database.GetCollection<Request>("requests");
+});
+
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+
 
 // ✔ Notification Pattern (ESSENCIAL)
 builder.Services.AddScoped<IApplicationNotificationHandler, ApplicationNotificationHandler>();

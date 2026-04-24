@@ -6,11 +6,11 @@ namespace ApiMongoTreino.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
-public class RequestController
+public class RequestController : ControllerBase
 {
     private readonly IRequestService _service;
     private readonly IApplicationNotificationHandler _notifications;
-    public RequestController(IRequestService service,IApplicationNotificationHandler notifications)
+    public RequestController(IRequestService service, IApplicationNotificationHandler notifications)
     {
         _service = service;
         _notifications = notifications;
@@ -20,5 +20,12 @@ public class RequestController
     public async Task<IActionResult> CreateRequest([FromBody] CreateRequestDto dto)
     {
         var request = await _service.CreateRequest(dto);
+
+        if (_notifications.HasErrors())
+        {
+            return BadRequest(_notifications.GetErrors());
+        }
+
+        return Ok(request);
     }
 }
