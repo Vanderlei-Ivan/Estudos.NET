@@ -12,8 +12,10 @@ public class Request
     public Customer Customer { get; set; }
     public List<ItensRequest> Itens { get; set;}
     public decimal TotalPrice { get; set;}
-    public DateTime PaymentDate{ get; set;}
+    public DateTime? PaymentDate{ get; set;}
     public DateTime RequestDate{ get; set;}
     [BsonRepresentation(BsonType.String)]
     public RequestStatus Status { get; set; }
+    [BsonRepresentation(BsonType.String)]
+    public PaymentMethod PaymentMethod{ get; set; }
 }

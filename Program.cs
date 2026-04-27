@@ -5,6 +5,9 @@ using ApiMongoTreino.Service;
 using ApiMongoTreino.Models;
 using Microsoft.AspNetCore.Mvc;
 using ApiMongoTreino.Service.Interface;
+using ApiMongoTreino.Service.Payment.Strategies;
+using ApiMongoTreino.Service.Payment.Factories;
+using ApiMongoTreino.Service.Payment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +67,12 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddScoped<PixPaymentProcessor>();
+builder.Services.AddScoped<CreditCardPaymentProcessor>();
+builder.Services.AddScoped<TicketPaymentProcessor>();
+builder.Services.AddScoped<IPaymentProcessorFactory,PaymentProcessorFactory>();
 
 
 // ✔ Notification Pattern (ESSENCIAL)

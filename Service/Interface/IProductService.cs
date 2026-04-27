@@ -11,5 +11,5 @@ public interface IProductService
     Task<List<GetProductsDto>> SearchForFilteredProducts(int filter);
     Task<List<GetProductsDto>> FilterProducts(FilterProductsDto dto);
     Task<List<Product>> GetProductsForRequest(List<ItemRequestDto> itens);
-    Task UpdateStock(List<Product> products,CreateRequestDto dto);
+    Task UpdateStock(CreateRequestDto dto);
 }

@@ -204,7 +204,7 @@ public class ProductService : ApplicationService, IProductService
         return products;
     }
 
-    public async Task UpdateStock(List<Product> products, CreateRequestDto dto)
+    public async Task UpdateStock(CreateRequestDto dto)
     {
         foreach (var item in dto.Itens)
         {
@@ -217,6 +217,7 @@ public class ProductService : ApplicationService, IProductService
             await _products.UpdateOneAsync(filter, update);
         }
     }
+
     // public async Task UpdateStock(List<Product> products, CreateRequestDto dto)
     // {
     //     foreach (var item in dto.Itens)
